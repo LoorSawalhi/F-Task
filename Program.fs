@@ -2,8 +2,7 @@
 open System.Collections.Generic
 
 
-(*5.Calling Add with a negative number will throw an exception “negatives not allowed”
-- and the negative that was passed.if there are multiple negatives, show all of them in the exception message*)
+(*6.Numbers bigger than 1000 should be ignored, so adding 2 + 1001  = 2*)
 
 exception NegativeNumber of string
 let ConvertStringToInteger ( number : string) =
@@ -25,7 +24,6 @@ let Add( numbers : string )( delimiter : char) =
         let mutable result : int = 0
        
         try
-            let negativeNums = new List<string>()
             for num in numbersArray do
                 let splitByComma = num.Split ","
                 let stringLength = num.Length - 1
@@ -36,9 +34,9 @@ let Add( numbers : string )( delimiter : char) =
                     else
                         for i in splitByComma do
                             let x = ConvertStringToInteger i
-                            if (x < 0) then
-                                negativeNums.Add(i)
-                            sum <- x + sum
+                            
+                            if (x < 1000) then
+                                sum <- x + sum
                         Some(sum)
                 
                 result <-
@@ -47,13 +45,9 @@ let Add( numbers : string )( delimiter : char) =
                     | _ -> result + innerValues.Value
                     
 
-            if (negativeNums.Count <> 0) then
-                let fullString = String.concat ", " negativeNums
-                raise (NegativeNumber(fullString))
             Some(result)        
         with
             | :? FormatException -> None
-            | NegativeNumber(e)-> printfn $"Negatives are not allowed : {e}";  None
 
 let mutable condition = true
 
