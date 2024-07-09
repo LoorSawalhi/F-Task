@@ -1,5 +1,6 @@
 ﻿open System
 
+(* 2.Allow the Add method to handle an unknown amount of numbers *)
 let ConvertStringToInteger ( number : string) =
     let tremmedNumber = number.Trim()
     if(tremmedNumber.Length <= 0) then
@@ -17,16 +18,13 @@ let Add( numbers : string ) =
         let numbersArray = numbers.Split ","
         let mutable sum : int = 0
         
-        if (numbersArray.Length > 3) then
-           None
-        else
-            try
-                for num in numbersArray do
-                    let x = ConvertStringToInteger num
-                    sum <- x + sum
-                Some(sum)
-            with
-                | :? FormatException ->  None
+        try
+            for num in numbersArray do
+                let x = ConvertStringToInteger num
+                sum <- x + sum
+            Some(sum)
+        with
+            | :? FormatException ->  None
         
 
 let mutable condition = true
