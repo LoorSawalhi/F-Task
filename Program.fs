@@ -18,12 +18,16 @@ let Add( numbers : string )( delimiter : string) =
     if (numbers.Length <= 0) then
         Some(0)
     else
-        
-        let numbersArray = numbers.Split @$"{delimiter}"
-        let negativeNums = new List<string>()
-        let mutable sum : int = 0
-
         try
+            if numbers.Contains(@",\n") || numbers.Contains(@"\n,") then
+                raise (FormatException())
+            
+            let numbersArray = numbers.Replace(@"\n",delimiter).Replace(",",delimiter).Split @$"{delimiter}"
+            
+            let negativeNums = new List<string>()
+            let mutable sum : int = 0
+
+        
             for num in numbersArray do
                 let x = ConvertStringToInteger num
                 if (x < 0) then
@@ -44,10 +48,17 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
-    let mutable index = numbersString.IndexOf @"\n"
     
-    let delimiter = numbersString[ .. (index - 1)].Trim('/').Trim('[').Trim(']')
-    let numbers = numbersString[index ..].Replace(@"\n", delimiter).Replace(",", delimiter)
+    let mutable delimiter = ","
+    let mutable numbers = numbersString
+        
+    if numbersString.Contains("//") then
+        let index = numbersString.IndexOf @"\n"
+        delimiter <- numbersString[ .. (index - 1)].Trim('/').Trim('[').Trim(']')
+        numbers <- numbersString[index ..]
+    else
+        numbers <- numbersString
+        delimiter <- ","
 
     printfn $"Your delimiter is {delimiter}"
     
