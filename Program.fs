@@ -1,8 +1,9 @@
 ﻿open System
 
-(*3.Allow the Add method to handle new lines between numbers (instead of commas).
-    the following input is ok:  “1\n2,3”  (will equal 6)
-    the following input is NOT ok:  “1,\n” (not need to prove it - just clarifying)*)
+(*4.Support different delimiters to change a delimiter, the beginning of the string will contain a separate 
+    line that looks like this:  
+    //[delimiter]\n[numbers…]” for example “//;\n1;2” should return three where the default delimiter is ‘;’ .
+     the first line is optional. all existing scenarios should still be supported*)
 
 let ConvertStringToInteger ( number : string) =
     let trimmedNumber = number.Trim()
@@ -12,13 +13,13 @@ let ConvertStringToInteger ( number : string) =
         let x : int = int number
         x
       
-let Add( numbers : string ) =
+let Add( numbers : string )( delimiter : char) =
     
     if (numbers.Length <= 0) then
         Some(0)
     else
         
-        let numbersArray = numbers.Split @"\n"
+        let numbersArray = numbers.Split @$"{delimiter}"
         
         let mutable result : int = 0
        
@@ -52,7 +53,12 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
-    let answer = Add numbersString
+    let inputs =  numbersString.Split @"\n"
+    let delimiter = inputs[0][2]
+    
+    printfn $"Your delimiter is {delimiter}"
+    
+    let answer = Add inputs[1] delimiter
     
     match answer with
     | None -> printfn $"Wrong Format"
