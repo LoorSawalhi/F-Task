@@ -24,6 +24,7 @@ let Add( numbers : string )( delimiter : char) =
         let mutable result : int = 0
        
         try
+            let negativeNums = new List<string>()
             for num in numbersArray do
                 let splitByComma = num.Split ","
                 let stringLength = num.Length - 1
@@ -34,8 +35,9 @@ let Add( numbers : string )( delimiter : char) =
                     else
                         for i in splitByComma do
                             let x = ConvertStringToInteger i
-                            
-                            if (x < 1000) then
+                            if (x < 0) then
+                                negativeNums.Add(i)
+                            elif (x < 1000) then
                                 sum <- x + sum
                         Some(sum)
                 
@@ -44,10 +46,13 @@ let Add( numbers : string )( delimiter : char) =
                     | None -> raise (FormatException("Wrong Formating"))
                     | _ -> result + innerValues.Value
                     
-
+            if (negativeNums.Count <> 0) then
+                let fullString = String.concat ", " negativeNums
+                raise (NegativeNumber(fullString))
             Some(result)        
         with
             | :? FormatException -> None
+            | NegativeNumber(e)-> printfn $"Negatives are not allowed : {e}";  None
 
 let mutable condition = true
 
