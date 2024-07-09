@@ -12,23 +12,25 @@ let ConvertStringToInteger ( number : string) =
     else
         let x : int = int number
         x
-      
+let delimiterExtractor (delimiter : string) =
+    let cleaningDelimiters = delimiter.Replace('[', ' ').Replace(']', ' ')
+    let delimitersList = cleaningDelimiters.Split " "
+    
+    delimitersList
 let Add( numbers : string )( delimiter : string) =
     
     if (numbers.Length <= 0) then
         Some(0)
     else
+        let delimiters = delimiterExtractor delimiter
         
         let numbersArray = numbers.Split @$"{delimiter}"
         let mutable sum : int = 0
 
         try
             for num in numbersArray do
-                let splitByComma = num.Split ","
-                let stringLength = num.Length - 1
-                for i in splitByComma do
-                    let x = ConvertStringToInteger i
-                    sum <- x + sum
+                let x = ConvertStringToInteger num
+                sum <- x + sum
 
             Some(sum)        
         with
@@ -40,9 +42,9 @@ while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
     let inputs =  numbersString.Split @"\n"
-    let delimiter = inputs[0].Trim('/').Trim('[').Trim(']')
+    let delimiter = inputs[0].Trim('/')
     
-    printfn $"Your delimiter is {delimiter}"
+    printfn $"Your delimiters are {delimiter}"
     
     let answer = Add inputs[1] delimiter
     
