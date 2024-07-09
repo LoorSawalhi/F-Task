@@ -24,11 +24,8 @@ let Add( numbers : string )( delimiter : string) =
 
         try
             for num in numbersArray do
-                let splitByComma = num.Split ","
-                let stringLength = num.Length - 1
-                for i in splitByComma do
-                    let x = ConvertStringToInteger i
-                    sum <- x + sum
+                let x = ConvertStringToInteger num
+                sum <- x + sum
 
             Some(sum)        
         with
