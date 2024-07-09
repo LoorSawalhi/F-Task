@@ -18,32 +18,20 @@ let Add( numbers : string )( delimiter : char) =
     if (numbers.Length <= 0) then
         Some(0)
     else
-        
-        let numbersArray = numbers.Split @$"{delimiter}"
-        
-        let mutable result : int = 0
-       
         try
+            if numbers.Contains(@",\n") || numbers.Contains(@"\n,") then
+                raise (FormatException())
+            
+            let numbersArray = numbers.Replace(@"\n",",").Split @$"{delimiter}"
+            
+            let mutable sum : int = 0
+        
             for num in numbersArray do
-                let splitByComma = num.Split ","
-                let stringLength = num.Length - 1
-                let mutable sum : int = 0
-                let innerValues =
-                    if (num.Length <> 0 && (num[0] = ',' || num[stringLength] = ',')) then
-                        None
-                    else
-                        for i in splitByComma do
-                            let x = ConvertStringToInteger i
-                            sum <- x + sum
-                        Some(sum)
-                
-                result <-
-                    match innerValues with
-                    | None -> raise (FormatException("Wrong Formating"))
-                    | _ -> result + innerValues.Value
-                
-                
-            Some(result)        
+            
+                let x = ConvertStringToInteger num
+                sum <- x + sum
+           
+            Some(sum)        
         with
             | :? FormatException ->  None
         
@@ -61,7 +49,7 @@ while condition do
         delimiter <- numbersString[2]
         numbers <- numbersString[index..].Replace(@"\n", delimiter.ToString()).Replace(',', delimiter)
     else
-        numbers <- numbersString.Replace(@"\n", ",")
+        numbers <- numbersString
         delimiter <- ','
     
     printfn $"Your delimiter is {delimiter}"
