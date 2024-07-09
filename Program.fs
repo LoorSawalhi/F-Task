@@ -17,32 +17,18 @@ let Add( numbers : string ) =
     if (numbers.Length <= 0) then
         Some(0)
     else
-        
-        let numbersArray = numbers.Split @"\n"
-        
-        let mutable result : int = 0
-       
         try
+            if numbers.Contains(@",\n") || numbers.Contains(@"\n,") then
+                    raise (FormatException())
+                
+            let numbersArray = numbers.Replace(@"\n",",").Split ","
+            let mutable sum : int = 0
+       
             for num in numbersArray do
-                let splitByComma = num.Split ","
-                let stringLength = num.Length - 1
-                let mutable sum : int = 0
-                let innerValues =
-                    if (num.Length <> 0 && (num[0] = ',' || num[stringLength] = ',')) then
-                        None
-                    else
-                        for i in splitByComma do
-                            let x = ConvertStringToInteger i
-                            sum <- x + sum
-                        Some(sum)
+                let x = ConvertStringToInteger num
+                sum <- x + sum
                 
-                result <-
-                    match innerValues with
-                    | None -> raise (FormatException("Wrong Formating"))
-                    | _ -> result + innerValues.Value
-                
-                
-            Some(result)        
+            Some(sum)        
         with
             | :? FormatException ->  None
         
