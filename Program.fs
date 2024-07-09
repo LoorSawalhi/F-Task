@@ -13,7 +13,7 @@ let ConvertStringToInteger ( number : string) =
         let x : int = int number
         x
 let delimiterExtractor (delimiter : string) =
-    let cleaningDelimiters = delimiter.Replace("[",  "").Replace("]", " ").Trim()
+    let cleaningDelimiters = delimiter.Replace("][",  " ").Trim('[').Trim(']')
     let delimitersList = cleaningDelimiters.Split " "
     
     delimitersList
@@ -41,12 +41,15 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
-    let inputs =  numbersString.Split @"\n"
-    let delimiter = inputs[0].Trim('/').Trim()
+    let mutable index = numbersString.IndexOf @"\n"
     
-    printfn $"Your delimiters are {delimiter}"
+    let delimiter = numbersString[ .. (index - 1)].Trim('/')
+    let fullDelimitersList = delimiter + @"[\n][,]"
+    let numbers = numbersString[index ..]
     
-    let answer = Add inputs[1] delimiter
+    printfn $"Your delimiters are {fullDelimitersList}"
+    
+    let answer = Add numbers fullDelimitersList
     
     match answer with
     | None -> printfn $"Wrong Format"
