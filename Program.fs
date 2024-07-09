@@ -1,10 +1,11 @@
 ﻿open System
+open System.Collections.Generic
 
-(*4.Support different delimiters to change a delimiter, the beginning of the string will contain a separate 
-    line that looks like this:  
-    //[delimiter]\n[numbers…]” for example “//;\n1;2” should return three where the default delimiter is ‘;’ .
-     the first line is optional. all existing scenarios should still be supported*)
 
+(*5.Calling Add with a negative number will throw an exception “negatives not allowed”
+- and the negative that was passed.if there are multiple negatives, show all of them in the exception message*)
+
+exception NegativeNumber of string
 let ConvertStringToInteger ( number : string) =
     let trimmedNumber = number.Trim()
     if(trimmedNumber.Length <= 0) then
@@ -24,6 +25,7 @@ let Add( numbers : string )( delimiter : char) =
         let mutable result : int = 0
        
         try
+            let negativeNums = new List<string>()
             for num in numbersArray do
                 let splitByComma = num.Split ","
                 let stringLength = num.Length - 1
@@ -34,6 +36,8 @@ let Add( numbers : string )( delimiter : char) =
                     else
                         for i in splitByComma do
                             let x = ConvertStringToInteger i
+                            if (x < 0) then
+                                negativeNums.Add(i)
                             sum <- x + sum
                         Some(sum)
                 
@@ -41,12 +45,15 @@ let Add( numbers : string )( delimiter : char) =
                     match innerValues with
                     | None -> raise (FormatException("Wrong Formating"))
                     | _ -> result + innerValues.Value
-                
-                
+                    
+
+            if (negativeNums.Count <> 0) then
+                let fullString = String.concat ", " negativeNums
+                raise (NegativeNumber(fullString))
             Some(result)        
         with
-            | :? FormatException ->  None
-        
+            | :? FormatException -> None
+            | NegativeNumber(e)-> printfn $"Negatives are not allowed : {e}";  None
 
 let mutable condition = true
 
