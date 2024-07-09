@@ -1,12 +1,12 @@
 ﻿open System
 
-(*1.Create a simple String calculator with a method int Add(string numbers)
-The method can take 0, 1 or 2 numbers, and will return their sum (for an empty string it will return 0) for example “” or “1” or “1,2”
-Start with the simplest test case of an empty string and move to 1 and two numbers*)
+(*3.Allow the Add method to handle new lines between numbers (instead of commas).
+    the following input is ok:  “1\n2,3”  (will equal 6)
+    the following input is NOT ok:  “1,\n” (not need to prove it - just clarifying)*)
 
 let ConvertStringToInteger ( number : string) =
-    let tremmedNumber = number.Trim()
-    if(tremmedNumber.Length <= 0) then
+    let trimmedNumber = number.Trim()
+    if(trimmedNumber.Length <= 0) then
         0
     else
         let x : int = int number
@@ -18,25 +18,39 @@ let Add( numbers : string ) =
         Some(0)
     else
         
-        let numbersArray = numbers.Split ","
-        let mutable sum : int = 0
+        let numbersArray = numbers.Split @"\n"
         
-        if (numbersArray.Length > 3) then
-           None
-        else
-            try
-                for num in numbersArray do
-                    let x = ConvertStringToInteger num
-                    sum <- x + sum
-                Some(sum)
-            with
-                | :? FormatException ->  None
+        let mutable result : int = 0
+       
+        try
+            for num in numbersArray do
+                let splitByComma = num.Split ","
+                let stringLength = num.Length - 1
+                let mutable sum : int = 0
+                let innerValues =
+                    if (num.Length <> 0 && (num[0] = ',' || num[stringLength] = ',')) then
+                        None
+                    else
+                        for i in splitByComma do
+                            let x = ConvertStringToInteger i
+                            sum <- x + sum
+                        Some(sum)
+                
+                result <-
+                    match innerValues with
+                    | None -> raise (FormatException("Wrong Formating"))
+                    | _ -> result + innerValues.Value
+                
+                
+            Some(result)        
+        with
+            | :? FormatException ->  None
         
 
 let mutable condition = true
 
 while condition do
-    printf @"Enter your string of numbers, separate by comma :"
+    printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
     let answer = Add numbersString
     
