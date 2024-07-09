@@ -46,7 +46,7 @@ let Add( numbers : string )( delimiter : string) =
 let mutable condition = true
 
 while condition do
-    printf @"Enter your string of numbers, separate by new lines \n :"
+    printf "Enter your string of numbers:"
     let numbersString = Console.ReadLine()
     
     let mutable delimiter = ","
