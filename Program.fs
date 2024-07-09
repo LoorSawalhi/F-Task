@@ -24,17 +24,25 @@ let Add( numbers : string )( delimiter : string) =
     else
         let delimiters = delimiterExtractor delimiter
         let numbersArray = numbers.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-        
+        let negativeNums = new List<string>()
         let mutable sum : int = 0
 
         try
             for num in numbersArray do
                 let x = ConvertStringToInteger num
-                sum <- x + sum
+                if (x < 0) then
+                    negativeNums.Add(num)
+                elif (x < 1000) then
+                    sum <- x + sum
 
+            if (negativeNums.Count <> 0) then
+                let fullString = String.concat ", " negativeNums
+                raise (NegativeNumber(fullString))
             Some(sum)        
         with
             | :? FormatException -> None
+            | NegativeNumber(e)-> printfn $"Negatives are not allowed : {e}";  None
+            
 
 let mutable condition = true
 
