@@ -22,12 +22,18 @@ let Add( numbers : string )( delimiter : string) =
     if (numbers.Length <= 0) then
         Some(0)
     else
-        let delimiters = delimiterExtractor delimiter
-        let numbersArray = numbers.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-        let negativeNums = new List<string>()
-        let mutable sum : int = 0
-
         try
+            if numbers.Contains(@",\n") || numbers.Contains(@"\n,") then
+                raise (FormatException())
+            
+            let mutable delimiters = delimiterExtractor delimiter
+            delimiters <- Array.append delimiters [|","|]
+            
+            let numbersArray = numbers.Replace(@"\n",",")
+                                   .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+            let negativeNums = new List<string>()
+            let mutable sum : int = 0
+
             for num in numbersArray do
                 let x = ConvertStringToInteger num
                 if (x < 0) then
@@ -47,17 +53,23 @@ let Add( numbers : string )( delimiter : string) =
 let mutable condition = true
 
 while condition do
-    printf @"Enter your string of numbers, separate by new lines \n :"
+    printf @"Enter your string of numbers :"
     let numbersString = Console.ReadLine()
-    let mutable index = numbersString.IndexOf @"\n"
+    let mutable delimiter = ","
+    let mutable numbers = numbersString
+        
+    if numbersString.Contains("//") then
+        let mutable index = numbersString.IndexOf @"\n"
+        delimiter <- numbersString[ .. (index - 1)].Trim('/')
+        
+        numbers <- numbersString[index ..]
+    else
+        numbers <- numbersString
+        delimiter <- ","
     
-    let delimiter = numbersString[ .. (index - 1)].Trim('/')
-    let fullDelimitersList = delimiter + @"[\n][,]"
-    let numbers = numbersString[index ..]
+    printfn $"Your delimiters are {delimiter}"
     
-    printfn $"Your delimiters are {fullDelimitersList}"
-    
-    let answer = Add numbers fullDelimitersList
+    let answer = Add numbers delimiter
     
     match answer with
     | None -> printfn $"Wrong Format"
