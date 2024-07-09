@@ -13,7 +13,20 @@ let ConvertStringToInteger ( number : string) =
         let x : int = int number
         x
       
-let Add( numbers : string )( delimiter : string) =
+let Add( numbersString : string )=
+    
+    let mutable delimiter = ","
+    let mutable numbers = numbersString
+        
+    if numbersString.Contains("//") then
+        let index = numbersString.IndexOf @"\n"
+        delimiter <- numbersString[ .. (index - 1)].Trim('/').Trim('[').Trim(']')
+        numbers <- numbersString[index ..]
+    else
+        numbers <- numbersString
+        delimiter <- ","
+
+    printfn $"Your delimiter is {delimiter}"
     
     if (numbers.Length <= 0) then
         Some(0)
@@ -49,20 +62,7 @@ while condition do
     printf "Enter your string of numbers:"
     let numbersString = Console.ReadLine()
     
-    let mutable delimiter = ","
-    let mutable numbers = numbersString
-        
-    if numbersString.Contains("//") then
-        let index = numbersString.IndexOf @"\n"
-        delimiter <- numbersString[ .. (index - 1)].Trim('/').Trim('[').Trim(']')
-        numbers <- numbersString[index ..]
-    else
-        numbers <- numbersString
-        delimiter <- ","
-
-    printfn $"Your delimiter is {delimiter}"
-    
-    let answer = Add numbers delimiter
+    let answer = Add numbers
     
     match answer with
     | None -> printfn $"Wrong Format"
