@@ -54,12 +54,14 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
-    let inputs =  numbersString.Split @"\n"
-    let delimiter = inputs[0][2]
+    let index = numbersString.IndexOf @"\n"
+    let delimiter = numbersString[2]
+    let numbers = numbersString[index..].Replace(@"\n", delimiter.ToString()).Replace(',', delimiter)
+    
     
     printfn $"Your delimiter is {delimiter}"
     
-    let answer = Add inputs[1] delimiter
+    let answer = Add numbers delimiter
     
     match answer with
     | None -> printfn $"Wrong Format"
