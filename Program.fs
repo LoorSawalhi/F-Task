@@ -53,9 +53,16 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers, separate by new lines \n :"
     let numbersString = Console.ReadLine()
-    let index = numbersString.IndexOf @"\n"
-    let delimiter = numbersString[2]
-    let numbers = numbersString[index..].Replace(@"\n", delimiter.ToString()).Replace(',', delimiter)
+    let mutable delimiter = ','
+    let mutable numbers = numbersString
+        
+    if numbersString.Contains("//") then
+        let index = numbersString.IndexOf @"\n"
+        delimiter <- numbersString[2]
+        numbers <- numbersString[index..].Replace(@"\n", delimiter.ToString()).Replace(',', delimiter)
+    else
+        numbers <- numbersString.Replace(@"\n", ",")
+        delimiter <- ','
     
     printfn $"Your delimiter is {delimiter}"
     
