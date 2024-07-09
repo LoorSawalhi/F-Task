@@ -17,7 +17,21 @@ let delimiterExtractor (delimiter : string) =
     let delimitersList = cleaningDelimiters.Split " "
     
     delimitersList
-let Add( numbers : string )( delimiter : string) =
+let Add( numbersString : string ) =
+    
+    let mutable delimiter = ","
+    let mutable numbers = numbersString
+        
+    if numbersString.Contains("//") then
+        let mutable index = numbersString.IndexOf @"\n"
+        delimiter <- numbersString[ .. (index - 1)].Trim('/')
+        
+        numbers <- numbersString[index ..]
+    else
+        numbers <- numbersString
+        delimiter <- ","
+    
+    printfn $"Your delimiters are {delimiter}"
     
     if (numbers.Length <= 0) then
         Some(0)
@@ -55,24 +69,11 @@ let mutable condition = true
 while condition do
     printf @"Enter your string of numbers :"
     let numbersString = Console.ReadLine()
-    let mutable delimiter = ","
-    let mutable numbers = numbersString
-        
-    if numbersString.Contains("//") then
-        let mutable index = numbersString.IndexOf @"\n"
-        delimiter <- numbersString[ .. (index - 1)].Trim('/')
-        
-        numbers <- numbersString[index ..]
-    else
-        numbers <- numbersString
-        delimiter <- ","
     
-    printfn $"Your delimiters are {delimiter}"
-    
-    let answer = Add numbers delimiter
+    let answer = Add numbersString
     
     match answer with
-    | None -> printfn $"Wrong Format"
+    | None -> printfn "Wrong Format"
     | _ -> printfn $"Answer is %d{answer.Value}"
     
     printf "Wants to exit? press 1 is yes : "
