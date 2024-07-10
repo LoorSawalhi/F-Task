@@ -31,7 +31,8 @@ For the provided functionalities, here is the roles:
 ```
  
  For the used tested cases:
-```Enter your string of numbers :
+```
+Enter your string of numbers : 
 Answer is 0
 Enter your string of numbers :1
 Answer is 1
