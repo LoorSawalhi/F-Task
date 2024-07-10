@@ -71,13 +71,10 @@ let add( numbersString : string ) =
    
     result
   
+printf @"Enter your string of numbers :"
+let numbersString = Console.ReadLine()
+let answer = add numbersString
 
-let cond = true
-while cond do
-    printf @"Enter your string of numbers :"
-    let numbersString = Console.ReadLine()
-    let answer = add numbersString
-
-    match answer with
-    | None -> printfn "Wrong Format"
-    | Some i -> printfn $"Answer is %d{i}"
+match answer with
+| None -> printfn "Wrong Format"
+| Some i -> printfn $"Answer is %d{i}"
