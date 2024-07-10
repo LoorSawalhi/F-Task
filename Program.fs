@@ -1,68 +1,51 @@
 ﻿open System
-open System.Collections.Generic
 
-
-(*8.Allow multiple delimiters like this:  “//[delim1][delim2]\n” for example “//[*][%]\n1*2%3” should return 6.*)
-
+// The Final Version
 exception NegativeNumber of string
-let ConvertStringToInteger ( number : string) =
+let convertStringToInteger ( number : string) =
     let trimmedNumber = number.Trim()
-    if(trimmedNumber.Length <= 0) then
+    if(trimmedNumber.Length = 0) then
         0
     else
         let x : int = int number
         x
-let delimiterExtractor (delimiter : string) =
-    let cleaningDelimiters = delimiter.Replace("][",  " ").Trim('[').Trim(']')
-    let delimitersList = cleaningDelimiters.Split " "
-    
-    delimitersList
-let Add( numbersString : string ) =
-    
-    let mutable delimiter = ","
-    let mutable numbers = numbersString
-        
-    if numbersString.Contains("//") then
-        let mutable index = numbersString.IndexOf @"\n"
-        delimiter <- numbersString[ .. (index - 1)].Trim('/')
-        
-        numbers <- numbersString[index ..]
+let delimiterAndNumbersExtractor (numbersString: string) =
+    if numbersString.StartsWith("//") then
+        let index = numbersString.IndexOf(@"\n")
+        let delimiter = numbersString[2..index - 1]
+        let numbers = numbersString[index + 2..]
+        let cleanedDelimiters = delimiter.Replace("][",  " ").Trim('[').Trim(']')
+        let mutable arrayOfDelimiters = cleanedDelimiters.Split " "
+        arrayOfDelimiters <- Array.append arrayOfDelimiters [|","; @"\n"|]
+        arrayOfDelimiters, numbers
     else
-        numbers <- numbersString
-        delimiter <- ","
+        [|","; @"\n"|], numbersString
+        
+let add( numbersString : string ) =
     
-    printfn $"Your delimiters are {delimiter}"
+    let mutable delimiters, numbers = delimiterAndNumbersExtractor numbersString
     
-    if (numbers.Length <= 0) then
+    if (numbers = "") then
         Some(0)
     else
         try
             if numbers.Contains(@",\n") || numbers.Contains(@"\n,") then
                 raise (FormatException())
-            
-            let mutable delimiters = delimiterExtractor delimiter
-            delimiters <- Array.append delimiters [|","|]
-            
-            let numbersArray = numbers.Replace(@"\n",",")
-                                   .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-            let negativeNums = new List<string>()
-            let mutable sum : int = 0
-
-            for num in numbersArray do
-                let x = ConvertStringToInteger num
-                if (x < 0) then
-                    negativeNums.Add(num)
-                elif (x < 1000) then
-                    sum <- x + sum
-
-            if (negativeNums.Count <> 0) then
+                      
+            let numbersArray = numbers.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+            let negativeNums = Array.filter (fun n -> int n < 0) numbersArray
+            if negativeNums.Length > 0 then
                 let fullString = String.concat ", " negativeNums
                 raise (NegativeNumber(fullString))
-            Some(sum)        
+            let mutable sum : int = 0
+            for num in numbersArray do
+                let x = convertStringToInteger num
+                if (x < 1000) then
+                    sum <- x + sum
+            Some(sum)
         with
             | :? FormatException -> None
             | NegativeNumber(e)-> printfn $"Negatives are not allowed : {e}";  None
-            
 
 let mutable condition = true
 
@@ -70,15 +53,16 @@ while condition do
     printf @"Enter your string of numbers :"
     let numbersString = Console.ReadLine()
     
-    let answer = Add numbersString
+    let answer = add numbersString
     
     match answer with
     | None -> printfn "Wrong Format"
     | _ -> printfn $"Answer is %d{answer.Value}"
     
-    printf "Wants to exit? press 1 is yes : "
-    
-    let exitCondition = Console.ReadLine()
-    
-    if exitCondition = "1" then
-        condition <- false
+    //commented this for easy testing
+    // printf "Wants to exit? press 1 is yes : "
+    //
+    // let exitCondition = Console.ReadLine()
+    //
+    // if exitCondition = "1" then
+    //     condition <- false
