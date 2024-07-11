@@ -66,7 +66,7 @@ let add( numbersString : string ) =
                 |> Array.filter (fun n ->
                     match n with
                     | None -> true
-                    | Some(v) -> v < 1000)
+                    | Some(v) -> v <= 1000)
                 |> processNumbers 
    
     result
